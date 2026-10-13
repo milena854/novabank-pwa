@@ -1,0 +1,19 @@
+{
+  "name": "NOVA Bank",
+  "short_name": "NOVA Bank",
+  "description": "Aplicativo bancário demonstrativo NOVA Bank",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#09251d",
+  "theme_color": "#09251d",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/256/10503/10503874.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

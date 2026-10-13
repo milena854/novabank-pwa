@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09251d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NOVA Bank">
+  <title>NOVA Bank</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/256/10503/10503874.png">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/256/10503/10503874.png">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; font-family: Arial, Helvetica, sans-serif; background: #09251d; color: #fff; }
+    body { min-height: 100vh; }
+    .loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; }
+    .logo { width: 76px; height: 76px; border-radius: 20px; margin-bottom: 18px; object-fit: cover; }
+    h1 { margin: 0 0 10px; font-size: 28px; }
+    p { color: #c1d5ce; line-height: 1.5; max-width: 440px; }
+    .spinner { width: 34px; height: 34px; margin: 22px 0; border: 3px solid #ffffff35; border-top-color: #16c784; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .button { display: inline-block; margin-top: 12px; padding: 12px 18px; border-radius: 10px; background: #16c784; color: #06251b; font-weight: bold; text-decoration: none; }
+    .hint { font-size: 13px; color: #a9c1b8; }
+    #error { display: none; }
+    #app { width: 100%; min-height: 100vh; }
+    iframe { display: block; width: 100%; height: 100vh; min-height: 600px; border: 0; background: #fff; }
+  </style>
+</head>
+<body>
+  <section id="carregando" class="loading">
+    <img class="logo" src="https://cdn-icons-png.flaticon.com/256/10503/10503874.png" alt="Ícone NOVA Bank">
+    <h1>NOVA Bank</h1>
+    <p id="mensagem">Conectando ao aplicativo...</p>
+    <div id="spinner" class="spinner" aria-label="Carregando"></div>
+    <section id="error">
+      <p>Não conseguimos mostrar o banco dentro desta página. Você pode abrir o aplicativo diretamente pelo botão abaixo.</p>
+      <a id="abrirDireto" class="button" target="_blank" rel="noopener">Abrir NOVA Bank</a>
+      <p class="hint">Confira também se a URL do Apps Script no arquivo index.html é a URL atual da implantação e termina em /exec.</p>
+    </section>
+  </section>
+  <main id="app">
+    <iframe id="banco" title="NOVA Bank" allow="clipboard-read; clipboard-write"></iframe>
+  </main>
+  <script>
+    // Se você recebeu uma NOVA URL ao reimplantar o Apps Script, substitua a URL abaixo.
+    const URL_APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbxi4Vi_822lCsD6w6xD9yz5sAQOtWsfJMuw1bITqjEK8M7lDxNE9bQnAf--TwV8tcE/exec';
+
+    const banco = document.getElementById('banco');
+    const carregando = document.getElementById('carregando');
+    const mensagem = document.getElementById('mensagem');
+    const spinner = document.getElementById('spinner');
+    const error = document.getElementById('error');
+    const abrirDireto = document.getElementById('abrirDireto');
+
+    abrirDireto.href = URL_APPS_SCRIPT;
+    banco.src = URL_APPS_SCRIPT;
+
+    let finalizado = false;
+    banco.addEventListener('load', function () {
+      // O evento load também pode ocorrer quando o Google mostra uma página de erro.
+      finalizado = true;
+      setTimeout(function () {
+        carregando.style.display = 'none';
+      }, 700);
+    });
+
+    setTimeout(function () {
+      if (!finalizado) {
+        mensagem.textContent = 'O carregamento está demorando mais que o esperado.';
+        spinner.style.display = 'none';
+        error.style.display = 'block';
+      }
+    }, 12000);
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(function () { console.log('NOVA Bank PWA ativado.'); })
+          .catch(function (err) { console.error('Erro no Service Worker:', err); });
+      });
+    }
+  </script>
+</body>
+</html>
